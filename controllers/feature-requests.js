@@ -1,4 +1,5 @@
 const FeatureRequest = require("../models/FeatureRequest");
+const { createCustomError } = require("../errors/custom-error");
 
 const getAllPublishedFeatureRequests = async (req, res) => {
   const featureRequests = await FeatureRequest.find({ isPublished: true });
@@ -6,13 +7,19 @@ const getAllPublishedFeatureRequests = async (req, res) => {
   res.status(200).json({ featureRequests, nbHits: featureRequests.length });
 };
 
-const getSingleFeatureRequest = async (req, res) => {
+const getSingleFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findById(req.params.id);
+
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
 
   res.status(200).json({ featureRequest });
 };
 
-const upvoteFeatureRequest = async (req, res) => {
+const upvoteFeatureRequest = async (req, res, next) => {
   let featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
     {
@@ -21,10 +28,16 @@ const upvoteFeatureRequest = async (req, res) => {
     { new: true },
   );
 
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
+
   res.status(200).json({ featureRequest });
 };
 
-const downvoteFeatureRequest = async (req, res) => {
+const downvoteFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
     {
@@ -33,45 +46,74 @@ const downvoteFeatureRequest = async (req, res) => {
     { new: true },
   );
 
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
+
   res.status(200).json({ featureRequest });
 };
 
 const createFeatureRequest = async (req, res) => {
   const featureRequest = await FeatureRequest.create(req.body);
 
-  res.status(200).json({ featureRequest });
+  res.status(201).json({ featureRequest });
 };
 
 // ------ ADMIN ------
-const getAllUnpublishedFeatureRequests = async (req, res) => {
-  const featureRequests = await FeatureRequest.find({ isPublished: false });
-  console.log(featureRequests);
+const getAllFeatureRequests = async (req, res) => {
+  const featureRequests = await FeatureRequest.find();
 
   res.status(200).json({ featureRequests, nbHits: featureRequests.length });
 };
 
-const publishFeatureRequest = async (req, res) => {
+const getAllUnpublishedFeatureRequests = async (req, res) => {
+  const featureRequests = await FeatureRequest.find({ isPublished: false });
+
+  res.status(200).json({ featureRequests, nbHits: featureRequests.length });
+};
+
+const publishFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
     { isPublished: true },
     { new: true },
   );
 
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
+
   res.status(200).json({ featureRequest });
 };
 
-const unpublishFeatureRequest = async (req, res) => {
+const unpublishFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
     { isPublished: false },
     { new: true },
   );
 
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
+
   res.status(200).json({ featureRequest });
 };
 
-const deleteFeatureRequest = async (req, res) => {
+const deleteFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findByIdAndDelete(req.params.id);
+
+  if (!featureRequest) {
+    return next(
+      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
 
   res.status(200).json({ featureRequest });
 };
@@ -82,6 +124,7 @@ module.exports = {
   upvoteFeatureRequest,
   downvoteFeatureRequest,
   createFeatureRequest,
+  getAllFeatureRequests,
   getAllUnpublishedFeatureRequests,
   publishFeatureRequest,
   unpublishFeatureRequest,

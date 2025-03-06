@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-featureReqestSchema = new mongoose.Schema({
+const featureReqestSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, "Title is required"],

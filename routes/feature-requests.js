@@ -7,6 +7,7 @@ const {
   upvoteFeatureRequest,
   downvoteFeatureRequest,
   createFeatureRequest,
+  getAllFeatureRequests,
   getAllUnpublishedFeatureRequests,
   publishFeatureRequest,
   unpublishFeatureRequest,
@@ -17,6 +18,7 @@ router.get("/", getAllPublishedFeatureRequests);
 router.post("/", createFeatureRequest);
 
 router.get("/unpublished", getAllUnpublishedFeatureRequests);
+router.get("/admin", getAllFeatureRequests);
 
 router.delete("/:id", deleteFeatureRequest);
 router.get("/:id", getSingleFeatureRequest);
