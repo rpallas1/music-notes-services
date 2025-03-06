@@ -2,23 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getAllPublishedFeatureRequests,
+  getAllFeatureRequests,
   getSingleFeatureRequest,
   upvoteFeatureRequest,
   downvoteFeatureRequest,
   createFeatureRequest,
-  getAllFeatureRequests,
-  getAllUnpublishedFeatureRequests,
   publishFeatureRequest,
   unpublishFeatureRequest,
   deleteFeatureRequest,
 } = require("../controllers/feature-requests");
 
-router.get("/", getAllPublishedFeatureRequests);
+router.get("/", getAllFeatureRequests);
 router.post("/", createFeatureRequest);
-
-router.get("/unpublished", getAllUnpublishedFeatureRequests);
-router.get("/admin", getAllFeatureRequests);
 
 router.delete("/:id", deleteFeatureRequest);
 router.get("/:id", getSingleFeatureRequest);

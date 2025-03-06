@@ -1,8 +1,8 @@
 const FeatureRequest = require("../models/FeatureRequest");
 const { createCustomError } = require("../errors/custom-error");
 
-const getAllPublishedFeatureRequests = async (req, res) => {
-  const featureRequests = await FeatureRequest.find({ isPublished: true });
+const getAllFeatureRequests = async (req, res) => {
+  const featureRequests = await FeatureRequest.find(req.query);
 
   res.status(200).json({ featureRequests, nbHits: featureRequests.length });
 };
@@ -62,18 +62,6 @@ const createFeatureRequest = async (req, res) => {
 };
 
 // ------ ADMIN ------
-const getAllFeatureRequests = async (req, res) => {
-  const featureRequests = await FeatureRequest.find();
-
-  res.status(200).json({ featureRequests, nbHits: featureRequests.length });
-};
-
-const getAllUnpublishedFeatureRequests = async (req, res) => {
-  const featureRequests = await FeatureRequest.find({ isPublished: false });
-
-  res.status(200).json({ featureRequests, nbHits: featureRequests.length });
-};
-
 const publishFeatureRequest = async (req, res, next) => {
   const featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
@@ -119,13 +107,11 @@ const deleteFeatureRequest = async (req, res, next) => {
 };
 
 module.exports = {
-  getAllPublishedFeatureRequests,
+  getAllFeatureRequests,
   getSingleFeatureRequest,
   upvoteFeatureRequest,
   downvoteFeatureRequest,
   createFeatureRequest,
-  getAllFeatureRequests,
-  getAllUnpublishedFeatureRequests,
   publishFeatureRequest,
   unpublishFeatureRequest,
   deleteFeatureRequest,
