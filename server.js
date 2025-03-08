@@ -1,4 +1,7 @@
 const express = require("express");
+const morgan = require("morgan");
+const fs = require("fs");
+const path = require("path");
 const cors = require("cors");
 const connectDB = require("./db/connect");
 
@@ -17,21 +20,20 @@ const contactFormRouter = require("./routes/contact-form");
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" },
+);
+
+app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.use("/api/v1/feature-requests", featureRequestsRouter);
 app.use("/api/v1/contact-form", contactFormRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const start = async () => {
-  try {
-    app.listen(PORT, console.log(`Server is listening on port: ${PORT}...`));
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-start();
+app.listen(PORT, console.log(`Server is listening on port: ${PORT}...`));
