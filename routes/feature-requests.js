@@ -4,11 +4,9 @@ const router = express.Router();
 const {
   getAllFeatureRequests,
   getSingleFeatureRequest,
-  upvoteFeatureRequest,
-  downvoteFeatureRequest,
+  updateFeatureRequestVote,
   createFeatureRequest,
-  publishFeatureRequest,
-  unpublishFeatureRequest,
+  updateFeatureRequest,
   deleteFeatureRequest,
 } = require("../controllers/feature-requests");
 
@@ -17,10 +15,8 @@ router.post("/", createFeatureRequest);
 
 router.delete("/:id", deleteFeatureRequest);
 router.get("/:id", getSingleFeatureRequest);
+router.patch("/:id", updateFeatureRequest);
 
-router.put("/:id/publish", publishFeatureRequest);
-router.put("/:id/unpublish", unpublishFeatureRequest);
-router.put("/:id/upvote", upvoteFeatureRequest);
-router.put("/:id/downvote", downvoteFeatureRequest);
+router.patch("/:id/votes", updateFeatureRequestVote);
 
 module.exports = router;

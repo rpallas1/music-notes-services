@@ -19,40 +19,41 @@ const getSingleFeatureRequest = async (req, res, next) => {
   res.status(200).json({ featureRequest });
 };
 
-const upvoteFeatureRequest = async (req, res, next) => {
+const updateFeatureRequestVote = async (req, res, next) => {
+  const { value } = req.body;
+
+  if (typeof value === "undefined") {
+    return next(
+      createCustomError(`Invalid update, 'value' key is required`, 400),
+    );
+  }
+
+  if (value !== 1 && value !== -1) {
+    return next(
+      createCustomError(`Value must be 1 or -1. Value recieved: ${value}`, 400),
+    );
+  }
+
   let featureRequest = await FeatureRequest.findByIdAndUpdate(
     req.params.id,
     {
-      $inc: { voteCount: 1 },
+      $inc: { voteCount: value },
     },
     { new: true },
   );
 
   if (!featureRequest) {
     return next(
-      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+      createCustomError(
+        `No feature request found with id:${req.params.id}`,
+        404,
+      ),
     );
   }
 
-  res.status(200).json({ featureRequest });
-};
-
-const downvoteFeatureRequest = async (req, res, next) => {
-  const featureRequest = await FeatureRequest.findByIdAndUpdate(
-    req.params.id,
-    {
-      $inc: { voteCount: -1 },
-    },
-    { new: true },
-  );
-
-  if (!featureRequest) {
-    return next(
-      createCustomError(`No feature request with id: ${req.params.id}`, 404),
-    );
-  }
-
-  res.status(200).json({ featureRequest });
+  res
+    .status(201)
+    .json({ message: "Vote recorded successfully", featureRequest });
 };
 
 const createFeatureRequest = async (req, res) => {
@@ -62,39 +63,61 @@ const createFeatureRequest = async (req, res) => {
 };
 
 // ------ ADMIN ------
-const publishFeatureRequest = async (req, res, next) => {
-  const featureRequest = await FeatureRequest.findByIdAndUpdate(
-    req.params.id,
-    { isPublished: true },
-    { new: true },
+const updateFeatureRequest = async (req, res, next) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  // TODO: Check if admin header
+
+  const allowedUpdates = [
+    "title",
+    "summary",
+    "description",
+    "tag",
+    "published",
+  ];
+  const actualUpdates = Object.keys(updates);
+
+  const isValidOperation = actualUpdates.every((update) =>
+    allowedUpdates.includes(update),
   );
 
-  if (!featureRequest) {
+  if (!isValidOperation) {
     return next(
-      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+      createCustomError(
+        `Invalid updates. Updates attempted: [${actualUpdates.toString()}]`,
+        400,
+      ),
     );
   }
 
-  res.status(200).json({ featureRequest });
-};
-
-const unpublishFeatureRequest = async (req, res, next) => {
-  const featureRequest = await FeatureRequest.findByIdAndUpdate(
-    req.params.id,
-    { isPublished: false },
-    { new: true },
-  );
+  const featureRequest = await FeatureRequest.findById(id);
 
   if (!featureRequest) {
     return next(
-      createCustomError(`No feature request with id: ${req.params.id}`, 404),
+      createCustomError(`No feature request found with id: ${id}`, 404),
     );
   }
 
-  res.status(200).json({ featureRequest });
+  actualUpdates.forEach((update) => {
+    featureRequest[update] = updates[update];
+  });
+
+  if (updates.published) {
+    featureRequest.datePublished = updates.published ? new Date() : null;
+  }
+
+  await featureRequest.save();
+
+  res.status(201).json({
+    message: "Feature request updated successfully",
+    featureRequest,
+  });
 };
 
 const deleteFeatureRequest = async (req, res, next) => {
+  // TODO: Check if admin
+
   const featureRequest = await FeatureRequest.findByIdAndDelete(req.params.id);
 
   if (!featureRequest) {
@@ -109,10 +132,8 @@ const deleteFeatureRequest = async (req, res, next) => {
 module.exports = {
   getAllFeatureRequests,
   getSingleFeatureRequest,
-  upvoteFeatureRequest,
-  downvoteFeatureRequest,
+  updateFeatureRequestVote,
   createFeatureRequest,
-  publishFeatureRequest,
-  unpublishFeatureRequest,
+  updateFeatureRequest,
   deleteFeatureRequest,
 };

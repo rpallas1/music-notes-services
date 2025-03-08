@@ -10,7 +10,7 @@ const {
 
 router.get("/", getAllContactForms);
 router.post("/", createContactForm);
-router.put("/:id", updateContactForm);
+router.patch("/:id", updateContactForm);
 router.delete("/:id", deleteContactForm);
 
 module.exports = router;

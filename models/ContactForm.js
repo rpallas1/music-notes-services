@@ -31,6 +31,10 @@ const contactFormSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  dateReviewed: {
+    type: Date,
+    default: null,
+  },
 });
 
 module.exports = mongoose.model("ContactForm", contactFormSchema);

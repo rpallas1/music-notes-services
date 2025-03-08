@@ -2,37 +2,68 @@ const ContactForm = require("../models/ContactForm");
 const { createCustomError } = require("../errors/custom-error");
 
 const getAllContactForms = async (req, res) => {
+  // TODO: Check if admin
+
   const contactForms = await ContactForm.find(req.query);
 
   res.status(200).json({ contactForms, nbHits: contactForms.length });
 };
 
 const updateContactForm = async (req, res, next) => {
-  const contactForm = await ContactForm.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
+  // TODO: Check if admin
+
+  const { id } = req.params;
+  const updates = req.body;
+
+  const allowedUpdates = ["reviewed"];
+  const actualUpdates = Object.keys(updates);
+
+  const isValidOperation = actualUpdates.every((update) =>
+    allowedUpdates.includes(update),
   );
 
-  if (!contactForm) {
+  if (!isValidOperation) {
     return next(
-      createCustomError(`No contact form with id: ${req.params.id}`, 404),
+      createCustomError(
+        `Invalid updates. Updates attempted: [${actualUpdates.toString()}]`,
+        400,
+      ),
     );
   }
 
-  res.status(200).json({ contactForm });
+  const contactForm = await ContactForm.findById(id);
+
+  if (!contactForm) {
+    return next(createCustomError(`No contact form found with id: ${id}`, 404));
+  }
+
+  actualUpdates.forEach((update) => {
+    contactForm[update] = updates[update];
+  });
+
+  if (updates.reviewed) {
+    contactForm.dateReviewed = updates.reviewed ? new Date() : null;
+  }
+
+  await contactForm.save();
+
+  res.status(201).json({
+    message: "Contact form updated successfully",
+    contactForm,
+  });
 };
 
 const createContactForm = async (req, res) => {
+  // TODO: Check if admin
+
   const contactForm = await ContactForm.create(req.body);
 
   res.status(201).json({ contactForm });
 };
 
 const deleteContactForm = async (req, res, next) => {
+  // TODO: Check if admin
+
   const contactForm = await ContactForm.findByIdAndDelete(req.params.id);
 
   if (!contactForm) {
