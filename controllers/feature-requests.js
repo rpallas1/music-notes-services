@@ -1,5 +1,6 @@
 const FeatureRequest = require("../models/FeatureRequest");
 const { createCustomError } = require("../errors/custom-error");
+const isAdmin = require("../utils/isAdmin");
 
 const getAllFeatureRequests = async (req, res) => {
   const featureRequests = await FeatureRequest.find(req.query);
@@ -67,7 +68,14 @@ const updateFeatureRequest = async (req, res, next) => {
   const { id } = req.params;
   const updates = req.body;
 
-  // TODO: Check if admin header
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const allowedUpdates = [
     "title",
@@ -116,7 +124,14 @@ const updateFeatureRequest = async (req, res, next) => {
 };
 
 const deleteFeatureRequest = async (req, res, next) => {
-  // TODO: Check if admin
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const featureRequest = await FeatureRequest.findByIdAndDelete(req.params.id);
 

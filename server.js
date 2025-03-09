@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
@@ -20,12 +21,23 @@ const contactFormRouter = require("./routes/contact-form");
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  { flags: "a" },
-);
+const errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
+  flags: "a",
+});
 
-app.use(morgan("combined", { stream: accessLogStream }));
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use(
+  morgan("combined", {
+    stream: errorLogStream,
+    skip: (_, res) => res.statusCode < 400,
+  }),
+);
+app.use(limiter);
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

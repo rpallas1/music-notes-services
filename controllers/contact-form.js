@@ -1,8 +1,16 @@
 const ContactForm = require("../models/ContactForm");
 const { createCustomError } = require("../errors/custom-error");
+const isAdmin = require("../utils/isAdmin");
 
-const getAllContactForms = async (req, res) => {
-  // TODO: Check if admin
+const getAllContactForms = async (req, res, next) => {
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const contactForms = await ContactForm.find(req.query);
 
@@ -10,7 +18,14 @@ const getAllContactForms = async (req, res) => {
 };
 
 const updateContactForm = async (req, res, next) => {
-  // TODO: Check if admin
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const { id } = req.params;
   const updates = req.body;
@@ -54,7 +69,14 @@ const updateContactForm = async (req, res, next) => {
 };
 
 const createContactForm = async (req, res) => {
-  // TODO: Check if admin
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const contactForm = await ContactForm.create(req.body);
 
@@ -62,7 +84,14 @@ const createContactForm = async (req, res) => {
 };
 
 const deleteContactForm = async (req, res, next) => {
-  // TODO: Check if admin
+  if (!isAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
 
   const contactForm = await ContactForm.findByIdAndDelete(req.params.id);
 
