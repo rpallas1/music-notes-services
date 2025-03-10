@@ -12,7 +12,6 @@ require("express-async-errors");
 connectDB();
 
 const app = express();
-const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000;
 
 const featureRequestsRouter = require("./routes/feature-requests");
@@ -41,8 +40,8 @@ app.use(
 );
 app.use(limiter);
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/feature-requests", featureRequestsRouter);
 app.use("/api/v1/contact-form", contactFormRouter);

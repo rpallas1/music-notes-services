@@ -6,16 +6,14 @@ const {
   getSingleFeatureRequest,
   updateFeatureRequestVote,
   createFeatureRequest,
-  // updateFeatureRequest,
-  // deleteFeatureRequest,
 } = require("../controllers/feature-requests");
 
-router.get("/", getAllFeatureRequests);
-router.post("/", createFeatureRequest);
+const validateFeatureRequest = require("../middleware/validators/validateFeatureRequest");
 
-// router.delete("/:id", deleteFeatureRequest);
+router.get("/", getAllFeatureRequests);
+router.post("/", validateFeatureRequest, createFeatureRequest);
+
 router.get("/:id", getSingleFeatureRequest);
-// router.patch("/:id", updateFeatureRequest);
 
 router.patch("/:id/votes", updateFeatureRequestVote);
 
