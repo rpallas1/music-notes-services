@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getAllContactForms,
-  updateContactForm,
+  // getAllContactForms,
+  // updateContactForm,
   createContactForm,
-  deleteContactForm,
+  // deleteContactForm,
 } = require("../controllers/contact-form");
 
-router.get("/", getAllContactForms);
+// router.get("/", getAllContactForms);
 router.post("/", createContactForm);
-router.patch("/:id", updateContactForm);
-router.delete("/:id", deleteContactForm);
+// router.patch("/:id", updateContactForm);
+// router.delete("/:id", deleteContactForm);
 
 module.exports = router;
