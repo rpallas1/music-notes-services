@@ -6,7 +6,7 @@ const createContactForm = async (req, res) => {
 
     res
       .status(201)
-      .json({ msg: "Contact form successfully created", contactForm });
+      .json({ message: "Contact form successfully created", contactForm });
   } catch (err) {
     res.status(500).json({ error: "Server error", message: err.message });
   }

@@ -62,7 +62,7 @@ const deleteFeatureRequest = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ msg: "Feature request deleted successfully", featureRequest });
+    .json({ message: "Feature request deleted successfully", featureRequest });
 };
 
 module.exports = {
