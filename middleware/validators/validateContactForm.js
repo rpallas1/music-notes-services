@@ -3,7 +3,6 @@ const { check, validationResult } = require("express-validator");
 const validateContactForm = [
   check("name")
     .trim()
-    .escape()
     .notEmpty()
     .withMessage("Name is required")
     .isLength({ max: 100 })
@@ -13,14 +12,13 @@ const validateContactForm = [
     .notEmpty()
     .withMessage("Email is required")
     .bail()
-    .isEmail()
+    .isEmail({ ignore_max_length: true })
     .withMessage("Invalid email address")
     .normalizeEmail()
     .isLength({ max: 100 })
     .withMessage("Email cannot exceed 100 characters"),
   check("message")
     .trim()
-    .escape()
     .notEmpty()
     .withMessage("Message is required")
     .isLength({ max: 10000 })

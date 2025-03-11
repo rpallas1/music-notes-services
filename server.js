@@ -32,6 +32,16 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again later.",
 });
 
+let adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: "Too many requests from this IP, please try again later.",
+});
+
+if (process.env.NODE_ENV === "development") {
+  adminLimiter = rateLimit({});
+}
+
 app.use(
   morgan("combined", {
     stream: errorLogStream,
@@ -45,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/feature-requests", featureRequestsRouter);
 app.use("/api/v1/contact-form", contactFormRouter);
-app.use("/api/v1/admin", isAdminMiddleware, adminRouter);
+app.use("/api/v1/admin", isAdminMiddleware, adminLimiter, adminRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

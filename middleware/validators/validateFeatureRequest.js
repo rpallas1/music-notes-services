@@ -13,7 +13,6 @@ const validateFeatureRequest = [
 
   check("title")
     .trim()
-    .escape()
     .notEmpty()
     .withMessage("Title is required")
     .isLength({ max: 50 })
@@ -21,14 +20,12 @@ const validateFeatureRequest = [
 
   check("summary")
     .trim()
-    .escape()
     .isLength({ max: 200 })
     .withMessage("Summary cannot exceed 200 characters")
     .optional(),
 
   check("description")
     .trim()
-    .escape()
     .notEmpty()
     .withMessage("Description is required")
     .isLength({ max: 10000 })
@@ -37,11 +34,10 @@ const validateFeatureRequest = [
   check("email")
     .optional()
     .trim()
-    .escape()
     .notEmpty()
     .withMessage("Email is required")
     .bail()
-    .isEmail()
+    .isEmail({ ignore_max_length: true })
     .withMessage("Invalid email address")
     .normalizeEmail()
     .isLength({ max: 100 })

@@ -12,11 +12,13 @@ const {
   deleteFeatureRequest,
 } = require("../controllers/admin/feature-requests");
 
-router.get("/contact-form", getAllContactForms);
-router.patch("/contact-form/:id", updateContactForm);
-router.delete("/contact-form/:id", deleteContactForm);
+const validateParams = require("../middleware/validators/validateParams");
 
-router.patch("/feature-requests/:id", updateFeatureRequest);
-router.delete("/feature-requests/:id", deleteFeatureRequest);
+router.get("/contact-form", getAllContactForms);
+router.patch("/contact-form/:id", validateParams, updateContactForm);
+router.delete("/contact-form/:id", validateParams, deleteContactForm);
+
+router.patch("/feature-requests/:id", validateParams, updateFeatureRequest);
+router.delete("/feature-requests/:id", validateParams, deleteFeatureRequest);
 
 module.exports = router;

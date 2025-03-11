@@ -9,12 +9,14 @@ const {
 } = require("../controllers/feature-requests");
 
 const validateFeatureRequest = require("../middleware/validators/validateFeatureRequest");
+const validateGetFeatureRequests = require("../middleware/validators/validateGetFeatureRequests");
+const validateParams = require("../middleware/validators/validateParams");
 
-router.get("/", getAllFeatureRequests);
+router.get("/", validateGetFeatureRequests, getAllFeatureRequests);
 router.post("/", validateFeatureRequest, createFeatureRequest);
 
-router.get("/:id", getSingleFeatureRequest);
+router.get("/:id", validateParams, getSingleFeatureRequest);
 
-router.patch("/:id/votes", updateFeatureRequestVote);
+router.patch("/:id/votes", validateParams, updateFeatureRequestVote);
 
 module.exports = router;
