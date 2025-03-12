@@ -1,5 +1,5 @@
 const ContactForm = require("../../models/ContactForm");
-const { createCustomError } = require("../../errors/custom-error");
+const { createCustomError } = require("../../errors/customError");
 
 const getAllContactForms = async (req, res, next) => {
   const contactForms = await ContactForm.find(req.query);

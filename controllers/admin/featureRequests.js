@@ -1,5 +1,5 @@
 const FeatureRequest = require("../../models/FeatureRequest");
-const { createCustomError } = require("../../errors/custom-error");
+const { createCustomError } = require("../../errors/customError");
 
 const updateFeatureRequest = async (req, res, next) => {
   const { id } = req.params;

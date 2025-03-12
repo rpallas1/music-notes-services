@@ -14,19 +14,19 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const featureRequestsRouter = require("./routes/feature-requests");
-const contactFormRouter = require("./routes/contact-form");
+const featureRequestsRouter = require("./routes/featureRequests");
+const contactFormRouter = require("./routes/contactForm");
 const adminRouter = require("./routes/admin");
 
-const isAdminMiddleware = require("./middleware/is-admin");
-const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error-handler");
+const isAdminMiddleware = require("./middleware/isAdmin");
+const notFoundMiddleware = require("./middleware/notFound");
+const errorHandlerMiddleware = require("./middleware/errorHandler");
 
 const errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
   flags: "a",
 });
 
-const limiter = rateLimit({
+let limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",

@@ -5,12 +5,12 @@ const {
   getAllContactForms,
   updateContactForm,
   deleteContactForm,
-} = require("../controllers/admin/contact-form");
+} = require("../controllers/admin/contactForm");
 
 const {
   updateFeatureRequest,
   deleteFeatureRequest,
-} = require("../controllers/admin/feature-requests");
+} = require("../controllers/admin/featureRequests");
 
 const validateParams = require("../middleware/validators/validateParams");
 

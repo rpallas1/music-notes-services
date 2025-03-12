@@ -1,7 +1,8 @@
-const { createCustomError } = require("../errors/custom-error");
+const { createCustomError } = require("../errors/customError");
+const checkAdmin = require("../utils/checkAdmin");
 
 const isAdmin = (req, res, next) => {
-  if (req.headers["x-admin-key"] !== process.env.ADMIN_API_KEY) {
+  if (!checkAdmin(req)) {
     return next(
       createCustomError(
         "Unauthorized access. You do not have permission to perform this action",

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { createContactForm } = require("../controllers/contact-form");
+const { createContactForm } = require("../controllers/contactForm");
 
 const validateContactForm = require("../middleware/validators/validateContactForm");
 

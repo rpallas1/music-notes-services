@@ -6,7 +6,7 @@ const {
   getSingleFeatureRequest,
   updateFeatureRequestVote,
   createFeatureRequest,
-} = require("../controllers/feature-requests");
+} = require("../controllers/featureRequests");
 
 const validateFeatureRequest = require("../middleware/validators/validateFeatureRequest");
 const validateGetFeatureRequests = require("../middleware/validators/validateGetFeatureRequests");

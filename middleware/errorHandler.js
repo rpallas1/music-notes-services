@@ -1,4 +1,4 @@
-const { CustomAPIError } = require("../errors/custom-error");
+const { CustomAPIError } = require("../errors/customError");
 
 const errorHandlerMiddleware = async (err, req, res, next) => {
   console.log(err);

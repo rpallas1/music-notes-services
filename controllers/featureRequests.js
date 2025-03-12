@@ -1,5 +1,6 @@
 const FeatureRequest = require("../models/FeatureRequest");
-const { createCustomError } = require("../errors/custom-error");
+const { createCustomError } = require("../errors/customError");
+const checkAdmin = require("../utils/checkAdmin");
 
 const getAllFeatureRequests = async (req, res) => {
   const featureRequests = await FeatureRequest.find(req.query);
@@ -13,6 +14,15 @@ const getSingleFeatureRequest = async (req, res, next) => {
   if (!featureRequest) {
     return next(
       createCustomError(`No feature request with id: ${req.params.id}`, 404),
+    );
+  }
+
+  if (!featureRequest.published && !checkAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
     );
   }
 
@@ -34,13 +44,7 @@ const updateFeatureRequestVote = async (req, res, next) => {
     );
   }
 
-  let featureRequest = await FeatureRequest.findByIdAndUpdate(
-    req.params.id,
-    {
-      $inc: { voteCount: value },
-    },
-    { new: true },
-  );
+  const featureRequest = await FeatureRequest.findById(req.params.id);
 
   if (!featureRequest) {
     return next(
@@ -50,6 +54,18 @@ const updateFeatureRequestVote = async (req, res, next) => {
       ),
     );
   }
+
+  if (!featureRequest.published && !checkAdmin(req)) {
+    return next(
+      createCustomError(
+        "Unauthorized access. You do not have permission to perform this action",
+        403,
+      ),
+    );
+  }
+
+  featureRequest.voteCount += value;
+  await featureRequest.save();
 
   res
     .status(201)
