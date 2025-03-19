@@ -1,9 +1,9 @@
 require("dotenv").config();
 
-const connectDB = require("./db/connect");
-const FeatureRequest = require("./models/FeatureRequest");
+const connectDB = require("../db/connect");
+const FeatureRequest = require("../models/FeatureRequest");
 
-const jsonFeatureRequests = require("./feature-requests.json");
+const jsonFeatureRequests = require("../feature-requests.json");
 
 const start = async () => {
   try {

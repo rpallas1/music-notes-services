@@ -1,10 +1,10 @@
 const express = require("express");
-const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const cors = require("cors");
+const connectDB = require("./src/db/connect");
+const https = require("https");
 const fs = require("fs");
 const path = require("path");
-const cors = require("cors");
-const connectDB = require("./db/connect");
 
 require("dotenv").config();
 require("express-async-errors");
@@ -14,17 +14,15 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const featureRequestsRouter = require("./routes/featureRequests");
-const contactFormRouter = require("./routes/contactForm");
-const adminRouter = require("./routes/admin");
+const featureRequestsRouter = require("./src/routes/featureRequests");
+const contactFormRouter = require("./src/routes/contactForm");
+const adminRouter = require("./src/routes/admin");
 
-const isAdminMiddleware = require("./middleware/isAdmin");
-const notFoundMiddleware = require("./middleware/notFound");
-const errorHandlerMiddleware = require("./middleware/errorHandler");
-
-const errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
-  flags: "a",
-});
+const captureResponseBody = require("./src/middleware/captureResponseBody");
+const morganLogger = require("./src/middleware/morganLogger");
+const isAdminMiddleware = require("./src/middleware/isAdmin");
+const notFoundMiddleware = require("./src/middleware/notFound");
+const errorHandlerMiddleware = require("./src/middleware/errorHandler");
 
 let limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -34,22 +32,31 @@ let limiter = rateLimit({
 
 let adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
 
-if (process.env.NODE_ENV === "development") {
-  adminLimiter = rateLimit({});
+app.use(captureResponseBody);
+app.use(morganLogger);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(limiter);
+
+  adminLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    message: "Too many requests from this IP, please try again later.",
+  });
 }
 
 app.use(
-  morgan("combined", {
-    stream: errorLogStream,
-    skip: (_, res) => res.statusCode < 400,
+  cors({
+    origin: "http://localhost:5173",
+    // origin: "https://musicnotes-pallascreations.com",
+    methods: "GET, POST, PATCH, DELETE",
+    credentials: true,
   }),
 );
-app.use(limiter);
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -60,4 +67,11 @@ app.use("/api/v1/admin", isAdminMiddleware, adminLimiter, adminRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-app.listen(PORT, console.log(`Server is listening on port: ${PORT}...`));
+const sslOptions = {
+  key: fs.readFileSync(path.resolve(__dirname, "./localhost-key.pem")),
+  cert: fs.readFileSync(path.resolve(__dirname, "./localhost.pem")),
+};
+
+https.createServer(sslOptions, app).listen(PORT, () => {
+  console.log(`Server is listening on port: ${PORT}...`);
+});

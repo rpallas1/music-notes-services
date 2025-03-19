@@ -43,7 +43,7 @@ const updateContactForm = async (req, res, next) => {
 
   await contactForm.save();
 
-  res.status(201).json({
+  res.status(200).json({
     message: "Contact form updated successfully",
     contactForm,
   });

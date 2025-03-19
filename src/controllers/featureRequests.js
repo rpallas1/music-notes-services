@@ -68,7 +68,7 @@ const updateFeatureRequestVote = async (req, res, next) => {
   await featureRequest.save();
 
   res
-    .status(201)
+    .status(200)
     .json({ message: "Vote recorded successfully", featureRequest });
 };
 

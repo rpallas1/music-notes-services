@@ -45,7 +45,7 @@ const updateFeatureRequest = async (req, res, next) => {
 
   await featureRequest.save();
 
-  res.status(201).json({
+  res.status(200).json({
     message: "Feature request updated successfully",
     featureRequest,
   });
