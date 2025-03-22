@@ -13,8 +13,6 @@ const errorLogStream = fs.createWriteStream(
   },
 );
 
-console.log(__dirname);
-
 const morganLogger = morgan(
   ":method :url :status :date[iso] :response-time ms - :res[content-length] :response-body",
   {

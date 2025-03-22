@@ -75,7 +75,9 @@ const updateFeatureRequestVote = async (req, res, next) => {
 const createFeatureRequest = async (req, res) => {
   const featureRequest = await FeatureRequest.create(req.body);
 
-  res.status(201).json({ featureRequest });
+  res
+    .status(201)
+    .json({ message: "Feature request successfully created", featureRequest });
 };
 
 module.exports = {

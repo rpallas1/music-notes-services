@@ -1,5 +1,5 @@
 const checkAdmin = (req) => {
-  return req.headers["x-admin-key"] === process.env.ADMIN_API_KEY;
+  return req.headers[process.env.ADMIN_HEADER] === process.env.ADMIN_API_KEY;
 };
 
 module.exports = checkAdmin;
