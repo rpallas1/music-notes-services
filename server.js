@@ -68,8 +68,8 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const sslOptions = {
-  key: fs.readFileSync(path.resolve(__dirname, "./localhost-key.pem")),
-  cert: fs.readFileSync(path.resolve(__dirname, "./localhost.pem")),
+  key: fs.readFileSync("/etc/ssl/private/mns-localhost-key.pem"),
+  cert: fs.readFileSync("/etc/ssl/certs/mns-localhost.pem"),
 };
 
 https.createServer(sslOptions, app).listen(PORT, () => {
