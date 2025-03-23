@@ -51,7 +51,8 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin: "http://192.168.0.152:5173",
     // origin: "https://musicnotes-pallascreations.com",
     methods: "GET, POST, PATCH, DELETE",
     credentials: true,
