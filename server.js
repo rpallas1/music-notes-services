@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === "production") {
 
 const origins = () => {
   if (process.env.NODE_ENV === "production") {
-    return "https://musicnotes-pallascreations.com";
+    return "https://musicnotes.pallascreations.com";
   }
 
   return ["http://localhost:5173", "http://192.168.0.152:5173"];
