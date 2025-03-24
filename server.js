@@ -49,22 +49,22 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// const origins = () => {
-//   if (process.env.NODE_ENV === "production") {
-//     return "https://musicnotes-pallascreations.com";
-//   }
-//
-//   return ["http://localhost:5173", "http://192.168.0.152:5173"];
-// };
+const origins = () => {
+  if (process.env.NODE_ENV === "production") {
+    return "https://musicnotes-pallascreations.com";
+  }
 
-// app.use(
-//   cors({
-//     origin: origins(),
-//     methods: "GET, POST, PATCH, DELETE",
-//     credentials: true,
-//   }),
-// );
-app.use(cors());
+  return ["http://localhost:5173", "http://192.168.0.152:5173"];
+};
+
+app.use(
+  cors({
+    origin: origins(),
+    methods: "GET, POST, PATCH, DELETE",
+    credentials: true,
+  }),
+);
+// app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -75,15 +75,17 @@ app.use("/api/v1/admin", isAdminMiddleware, adminLimiter, adminRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-// const sslOptions = {
-//   key: fs.readFileSync("/etc/ssl/private/mns-localhost-key.pem"),
-//   cert: fs.readFileSync("/etc/ssl/certs/mns-localhost.pem"),
-// };
-//
-// https.createServer(sslOptions, app).listen(PORT, () => {
-//   console.log(`Server is listening on port: ${PORT}...`);
-// });
+const sslOptions = {
+  // key: fs.readFileSync("/etc/ssl/private/mns-localhost-key.pem"),
+  // cert: fs.readFileSync("/etc/ssl/certs/mns-localhost.pem"),
+  key: fs.readFileSync("/etc/ssl/private/music-notes-services-key.key"),
+  cert: fs.readFileSync("/etc/ssl/certs/music-notes-services.crt"),
+};
 
-app.listen(PORT, () => {
+https.createServer(sslOptions, app).listen(PORT, () => {
   console.log(`Server is listening on port: ${PORT}...`);
 });
+
+// app.listen(PORT, () => {
+//   console.log(`Server is listening on port: ${PORT}...`);
+// });
