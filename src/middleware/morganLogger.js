@@ -14,10 +14,24 @@ const errorLogStream = fs.createWriteStream(
 );
 
 const morganLogger = morgan(
-  ":method :url :status :date[iso] :response-time ms - :res[content-length] :response-body",
+  ":method :url :status :date[iso] :response-time ms - :res[content-length] :response-body :remote-addr",
   {
     stream: errorLogStream,
     skip: (req, res) => res.statusCode < 400,
+  },
+);
+
+const adminLogStream = fs.createWriteStream(
+  path.join(__dirname, "../..", "admin.log"),
+  {
+    flags: "a",
+  },
+);
+
+const adminLogger = morgan(
+  ":method :url :status :date[iso] :response-time ms - :res[content-length] :response-body :remote-addr",
+  {
+    stream: adminLogStream,
   },
 );
 

@@ -20,6 +20,7 @@ const adminRouter = require("./src/routes/admin");
 
 const captureResponseBody = require("./src/middleware/captureResponseBody");
 const morganLogger = require("./src/middleware/morganLogger");
+const adminLogger = require("./src/middleware/adminLogger");
 const isAdminMiddleware = require("./src/middleware/isAdmin");
 const notFoundMiddleware = require("./src/middleware/notFound");
 const errorHandlerMiddleware = require("./src/middleware/errorHandler");
@@ -70,7 +71,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/feature-requests", featureRequestsRouter);
 app.use("/api/v1/contact-form", contactFormRouter);
-app.use("/api/v1/admin", isAdminMiddleware, adminLimiter, adminRouter);
+app.use(
+  "/api/v1/admin",
+  isAdminMiddleware,
+  adminLogger,
+  adminLimiter,
+  adminRouter,
+);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
