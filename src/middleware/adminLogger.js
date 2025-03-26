@@ -19,4 +19,4 @@ const adminLogger = morgan(
   },
 );
 
-module.exports = morganLogger;
+module.exports = adminLogger;
