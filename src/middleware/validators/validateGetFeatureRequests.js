@@ -1,5 +1,5 @@
 const { query, validationResult, matchedData } = require("express-validator");
-const isAdmin = require("../isAdmin");
+const checkAdmin = require("../checkAdmin");
 
 const validateGetFeatureRequests = [
   query("published")
@@ -26,7 +26,7 @@ const validateGetFeatureRequests = [
       return next();
     }
 
-    return isAdmin(req, res, next);
+    return checkAdmin(req, res, next);
   },
 ];
 

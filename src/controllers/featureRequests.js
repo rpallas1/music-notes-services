@@ -1,6 +1,6 @@
 const FeatureRequest = require("../models/FeatureRequest");
 const { createCustomError } = require("../errors/customError");
-const isAdmin = require("../middleware/isAdmin");
+const checkAdmin = require("../middleware/checkAdmin");
 
 const getAllFeatureRequests = async (req, res) => {
   const featureRequests = await FeatureRequest.find(req.query);
@@ -19,7 +19,7 @@ const getSingleFeatureRequest = async (req, res, next) => {
 
   if (!featureRequest.published) {
     // Use the isAdmin middleware function to check for admin rights and log the access
-    isAdmin(req, res, (err) => {
+    checkAdmin(req, res, (err) => {
       if (err) {
         return next(err);
       }
@@ -68,7 +68,7 @@ const updateFeatureRequestVote = async (req, res, next) => {
 
   if (!featureRequest.published) {
     // Use the isAdmin middleware function to check for admin rights and log the access
-    isAdmin(req, res, async (err) => {
+    checkAdmin(req, res, async (err) => {
       if (err) {
         return next(err);
       }

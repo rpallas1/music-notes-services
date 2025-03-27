@@ -1,14 +1,14 @@
 const { createCustomError } = require("../errors/customError");
-const checkAdmin = require("../utils/checkAdmin");
-const { adminLogger } = require("../middleware/logger");
+const isAdmin = require("../utils/isAdmin");
+const { adminLogger } = require("./logger");
 
-const isAdmin = (req, res, next) => {
+const checkAdmin = (req, res, next) => {
   adminLogger(req, res, (err) => {
     if (err) {
       return next(err);
     }
 
-    if (!checkAdmin(req)) {
+    if (!isAdmin(req)) {
       return next(
         createCustomError(
           "Unauthorized access. You do not have permission to perform this action",
@@ -21,4 +21,4 @@ const isAdmin = (req, res, next) => {
   });
 };
 
-module.exports = isAdmin;
+module.exports = checkAdmin;
