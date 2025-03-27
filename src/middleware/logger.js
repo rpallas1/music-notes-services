@@ -21,7 +21,7 @@ const adminLogStream = fs.createWriteStream(
 );
 
 const tokens =
-  ":method :url :status :date[clf] :response-time ms - :res[content-length] :response-body :remote-addr :remote-user :referrer :user-agent";
+  ":method :url :status :date[clf] :response-time ms - :res[content-length] :remote-addr :remote-user :referrer :user-agent";
 
 const morganLogger = morgan(tokens, {
   stream: errorLogStream,
