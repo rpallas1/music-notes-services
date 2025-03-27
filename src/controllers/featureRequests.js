@@ -1,6 +1,6 @@
 const FeatureRequest = require("../models/FeatureRequest");
 const { createCustomError } = require("../errors/customError");
-const checkAdmin = require("../utils/checkAdmin");
+const isAdmin = require("../middleware/isAdmin");
 
 const getAllFeatureRequests = async (req, res) => {
   const featureRequests = await FeatureRequest.find(req.query);
@@ -17,16 +17,18 @@ const getSingleFeatureRequest = async (req, res, next) => {
     );
   }
 
-  if (!featureRequest.published && !checkAdmin(req)) {
-    return next(
-      createCustomError(
-        "Unauthorized access. You do not have permission to perform this action",
-        403,
-      ),
-    );
-  }
+  if (!featureRequest.published) {
+    // Use the isAdmin middleware function to check for admin rights and log the access
+    isAdmin(req, res, (err) => {
+      if (err) {
+        return next(err);
+      }
 
-  res.status(200).json({ featureRequest });
+      res.status(200).json({ featureRequest });
+    });
+  } else {
+    res.status(200).json({ featureRequest });
+  }
 };
 
 const updateFeatureRequestVote = async (req, res, next) => {
@@ -55,21 +57,29 @@ const updateFeatureRequestVote = async (req, res, next) => {
     );
   }
 
-  if (!featureRequest.published && !checkAdmin(req)) {
-    return next(
-      createCustomError(
-        "Unauthorized access. You do not have permission to perform this action",
-        403,
-      ),
-    );
+  const updateVote = async () => {
+    featureRequest.voteCount += value;
+    await featureRequest.save();
+
+    res
+      .status(200)
+      .json({ message: "Vote recorded successfully", featureRequest });
+  };
+
+  if (!featureRequest.published) {
+    // Use the isAdmin middleware function to check for admin rights and log the access
+    isAdmin(req, res, async (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Proceed to update the vote
+      await updateVote();
+    });
+  } else {
+    // Proceed to update the vote
+    await updateVote();
   }
-
-  featureRequest.voteCount += value;
-  await featureRequest.save();
-
-  res
-    .status(200)
-    .json({ message: "Vote recorded successfully", featureRequest });
 };
 
 const createFeatureRequest = async (req, res) => {
