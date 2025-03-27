@@ -4,7 +4,6 @@ const cors = require("cors");
 const connectDB = require("./src/db/connect");
 const https = require("https");
 const fs = require("fs");
-const path = require("path");
 
 require("dotenv").config();
 require("express-async-errors");
@@ -26,13 +25,13 @@ const notFoundMiddleware = require("./src/middleware/notFound");
 const errorHandlerMiddleware = require("./src/middleware/errorHandler");
 
 let limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 15 minutes
+  windowMs: 1 * 60 * 1000, // 1 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
 
 let adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
@@ -55,7 +54,7 @@ const origins = () => {
     return "https://musicnotes.pallascreations.com";
   }
 
-  return ["http://localhost:5173", "http://192.168.0.152:5173"];
+  return "http://localhost:5173";
 };
 
 app.use(
@@ -65,6 +64,8 @@ app.use(
     credentials: true,
   }),
 );
+
+// For HTTP
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -82,17 +83,32 @@ app.use(
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
+const key = () => {
+  if (process.env.NODE_ENV === "production") {
+    return fs.readFileSync("/etc/ssl/private/music-notes-services-key.key");
+  }
+
+  return fs.readFileSync("/etc/ssl/private/mns-localhost-key.pem");
+};
+
+const cert = () => {
+  if (process.env.NODE_ENV === "production") {
+    return fs.readFileSync("/etc/ssl/certs/music-notes-services.crt");
+  }
+
+  return fs.readFileSync("/etc/ssl/certs/mns-localhost.pem");
+};
+
 const sslOptions = {
-  // key: fs.readFileSync("/etc/ssl/private/mns-localhost-key.pem"),
-  // cert: fs.readFileSync("/etc/ssl/certs/mns-localhost.pem"),
-  key: fs.readFileSync("/etc/ssl/private/music-notes-services-key.key"),
-  cert: fs.readFileSync("/etc/ssl/certs/music-notes-services.crt"),
+  key: key(),
+  cert: cert(),
 };
 
 https.createServer(sslOptions, app).listen(PORT, () => {
   console.log(`Server is listening on port: ${PORT}...`);
 });
 
+// For HTTP
 // app.listen(PORT, () => {
 //   console.log(`Server is listening on port: ${PORT}...`);
 // });

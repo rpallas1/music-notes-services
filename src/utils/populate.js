@@ -5,6 +5,9 @@ const FeatureRequest = require("../models/FeatureRequest");
 
 const jsonFeatureRequests = require("../../feature-requests.json");
 
+/**
+ *
+ */
 const start = async () => {
   try {
     await connectDB();

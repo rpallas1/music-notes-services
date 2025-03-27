@@ -13,7 +13,7 @@ const adminLogStream = fs.createWriteStream(
 );
 
 const adminLogger = morgan(
-  ":method :url :status :date[iso] :response-time ms - :res[content-length] :response-body :remote-addr",
+  ":method :url :status :date[clf] :response-time ms - :res[content-length] :response-body :remote-addr :remote-user :referrer :user-agent",
   {
     stream: adminLogStream,
   },
